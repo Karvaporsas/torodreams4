@@ -85,7 +85,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ---
 
-## Epic 4: Frontend — Login Flow
+## Epic 4: Frontend — Login Flow ✅ DONE
 
 ### Task 4.1 — Install Vue Router
 - `npm install vue-router`
@@ -127,6 +127,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ### Task 5.3 — Verify token expiry/logout
 - Click logout (or clear localStorage), confirm redirect back to `/login`
+
 
 
 
