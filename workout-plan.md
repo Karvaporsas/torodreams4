@@ -87,7 +87,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 4: Backend — Workout API
+## Epic 4: Backend — Workout API ✅ DONE
 
 ### Task 4.1 — `POST /api/workouts`
 - Creates a new workout for the authenticated user; sets `StartedAt = UtcNow`
