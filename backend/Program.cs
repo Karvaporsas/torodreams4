@@ -12,6 +12,6 @@ var app = builder.Build();
 
 app.UseCors();
 
-app.MapGet("/api/hello", () => new { message = "Hello, World!" });
+app.MapGet("/api/hello", () => new { message = "Hello, sunny World!" });
 
 app.Run();
