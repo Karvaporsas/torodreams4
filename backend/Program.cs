@@ -2,8 +2,22 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using ToroFitDreaming4.Cli;
 using ToroFitDreaming4.Data;
 using ToroFitDreaming4.Endpoints;
+
+// CLI mode: dotnet run -- --create-user <username> <password>
+if (args.Length > 0 && args[0] == "--create-user")
+{
+    var config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build();
+
+    return await UserCreator.RunAsync(args, config);
+}
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -53,3 +67,4 @@ app.MapAuthEndpoints();
 app.MapGet("/api/hello", () => new { message = "Hello, sunny World!" });
 
 app.Run();
+return 0;
