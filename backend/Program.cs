@@ -19,6 +19,19 @@ if (args.Length > 0 && args[0] == "--create-user")
     return await UserCreator.RunAsync(args, config);
 }
 
+// CLI mode: dotnet run -- --assign-role <username> <role>
+if (args.Length > 0 && args[0] == "--assign-role")
+{
+    var config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build();
+
+    return await RoleAssigner.RunAsync(args, config);
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -52,6 +65,7 @@ builder.Services
     });
 
 builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"))
     .SetFallbackPolicy(new Microsoft.AspNetCore.Authorization.AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser()
         .Build());
