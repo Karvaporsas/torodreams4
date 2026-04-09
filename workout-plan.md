@@ -29,7 +29,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 1: Backend — Data Model & Migration
+## Epic 1: Backend — Data Model & Migration ✅ DONE
 
 ### Task 1.1 — Add `UserRole` entity
 - File: `backend/Models/UserRole.cs`
@@ -56,7 +56,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 2: Backend — Roles & Admin CLI
+## Epic 2: Backend — Roles & Admin CLI ✅ DONE
 
 ### Task 2.1 — Admin authorization policy
 - Register a named `"AdminOnly"` policy in `Program.cs` that requires the `"Admin"` role claim
