@@ -77,6 +77,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAuthEndpoints();
+app.MapExerciseEndpoints();
 
 app.MapGet("/api/hello", () => new { message = "Hello, sunny World!" });
 
