@@ -115,7 +115,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ---
 
-## Epic 5: Verification
+## Epic 5: Verification ✅ DONE
 
 ### Task 5.1 — Verify protected endpoint
 - Without a token, `GET /api/hello` must return `401`
@@ -127,6 +127,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ### Task 5.3 — Verify token expiry/logout
 - Click logout (or clear localStorage), confirm redirect back to `/login`
+
 
 
 
