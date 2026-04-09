@@ -120,7 +120,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 5: Frontend — Admin Exercise Management
+## Epic 5: Frontend — Admin Exercise Management ✅ DONE
 
 ### Task 5.1 — Role-aware auth composable
 - Extend `useAuth.ts`: `isAdmin()` reads the `role` claim from the decoded JWT payload
