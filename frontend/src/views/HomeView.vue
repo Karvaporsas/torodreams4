@@ -8,6 +8,7 @@ const { logout, isAdmin } = useAuth()
 <template>
   <main>
     <div class="toolbar">
+      <router-link to="/workouts" class="nav-link">Workouts</router-link>
       <router-link v-if="isAdmin()" to="/admin/exercises" class="nav-link">Admin</router-link>
       <button @click="logout">Logout</button>
     </div>
