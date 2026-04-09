@@ -39,7 +39,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ---
 
-## Epic 2: Backend — JWT Authentication
+## Epic 2: Backend — JWT Authentication ✅ DONE
 
 ### Task 2.1 — Add NuGet package
 - `Microsoft.AspNetCore.Authentication.JwtBearer`
@@ -127,4 +127,5 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ### Task 5.3 — Verify token expiry/logout
 - Click logout (or clear localStorage), confirm redirect back to `/login`
+
 
