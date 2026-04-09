@@ -13,7 +13,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ---
 
-## Epic 1: Backend — Database & User Model
+## Epic 1: Backend — Database & User Model ✅ DONE
 
 ### Task 1.1 — Add NuGet packages
 - `Microsoft.EntityFrameworkCore.SqlServer`
@@ -127,3 +127,4 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ### Task 5.3 — Verify token expiry/logout
 - Click logout (or clear localStorage), confirm redirect back to `/login`
+
