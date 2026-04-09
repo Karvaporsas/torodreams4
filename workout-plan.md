@@ -178,7 +178,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 7: Verification
+## Epic 7: Verification ✅ DONE
 
 ### Task 7.1 — Admin exercise management
 - Assign admin role via CLI, log in, confirm admin nav appears
