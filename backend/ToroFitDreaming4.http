@@ -1,0 +1,6 @@
+@ToroFitDreaming4_HostAddress = http://localhost:5087
+
+GET {{ToroFitDreaming4_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

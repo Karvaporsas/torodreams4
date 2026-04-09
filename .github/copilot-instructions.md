@@ -1,37 +1,32 @@
 # Copilot Instructions
 
-<!-- TODO: Fill in as the project takes shape -->
-
 ## Project Overview
 
-<!-- Briefly describe what this project does and its main purpose -->
+ToroFitDreaming4 is a minimal full-stack web app with a .NET 9 REST API backend and a Vue 3 + TypeScript (Vite) frontend. The frontend fetches from a Hello World endpoint on the backend and displays the response.
 
 ## Architecture
 
-<!-- Describe the high-level structure once it exists, e.g.:
-- Where the main entry point is
-- How the major layers/modules relate to each other
-- Any non-obvious data flow or dependency patterns
--->
+- `backend/` — ASP.NET Core 9 minimal API (`Program.cs`). Single endpoint: `GET /api/hello` → `{ "message": "Hello, World!" }`. CORS is configured to allow `http://localhost:5173`.
+- `frontend/` — Vue 3 + TypeScript (Vite). `src/components/HelloWorld.vue` fetches from the API on mount and displays the message. `src/App.vue` is the root component.
 
 ## Build, Test & Lint
 
-<!-- Fill in once a build system is in place, e.g.:
 ```bash
-npm install       # install dependencies
-npm run dev       # start dev server
-npm run build     # production build
-npm run test      # run all tests
-npm run test -- --testPathPattern=<file>  # run a single test file
-npm run lint      # lint the codebase
+# Backend
+cd backend
+dotnet run          # starts on http://localhost:5000
+
+# Frontend
+cd frontend
+npm install         # install dependencies
+npm run dev         # starts on http://localhost:5173
+npm run build       # production build
+npm run type-check  # TypeScript type checking
 ```
--->
 
 ## Key Conventions
 
-<!-- Document patterns specific to this codebase that aren't obvious from a single file, e.g.:
-- Naming conventions for files/functions/components
-- State management approach
-- API contract patterns
-- Error handling style
--->
+- Backend uses .NET 9 minimal APIs (no Controllers).
+- Frontend uses Vue 3 Composition API with `<script setup lang="ts">`.
+- API base URL is hardcoded as `http://localhost:5000` in the frontend for local dev.
+

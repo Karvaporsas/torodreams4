@@ -1,0 +1,11 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Node.js / Frontend
+node_modules/
+dist/
+.vite/
