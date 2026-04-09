@@ -2,6 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import AdminExercisesView from '../views/AdminExercisesView.vue'
+import WorkoutsView from '../views/WorkoutsView.vue'
+import WorkoutActiveView from '../views/WorkoutActiveView.vue'
+import WorkoutDetailView from '../views/WorkoutDetailView.vue'
 import { parseTokenPayload } from '../composables/useAuth'
 
 const router = createRouter({
@@ -10,6 +13,9 @@ const router = createRouter({
     { path: '/', component: HomeView },
     { path: '/login', component: LoginView },
     { path: '/admin/exercises', component: AdminExercisesView },
+    { path: '/workouts', component: WorkoutsView },
+    { path: '/workouts/active', component: WorkoutActiveView },
+    { path: '/workouts/:id', component: WorkoutDetailView },
   ],
 })
 

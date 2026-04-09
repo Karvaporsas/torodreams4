@@ -146,7 +146,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 6: Frontend — Workout Flow
+## Epic 6: Frontend — Workout Flow ✅ DONE
 
 ### Task 6.1 — Routes
 - `/workouts` — workout history list
