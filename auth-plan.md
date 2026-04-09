@@ -71,7 +71,7 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ---
 
-## Epic 3: Backend — Admin CLI for User Creation
+## Epic 3: Backend — Admin CLI for User Creation ✅ DONE
 
 ### Task 3.1 — Add CLI argument handling in `Program.cs`
 - If `--create-user <username> <password>` args are detected at startup, run user creation mode instead of starting the web server
@@ -127,5 +127,6 @@ The frontend gains a Login page. On successful login the JWT is stored in `local
 
 ### Task 5.3 — Verify token expiry/logout
 - Click logout (or clear localStorage), confirm redirect back to `/login`
+
 
 
