@@ -69,7 +69,7 @@ UserRole        — UserId, Role (string: "Admin" | "User")
 
 ---
 
-## Epic 3: Backend — Exercise API
+## Epic 3: Backend — Exercise API ✅ DONE
 
 ### Task 3.1 — `GET /api/exercises`
 - Returns all exercises; requires authentication (any role)
