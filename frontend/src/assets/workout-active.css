@@ -3,119 +3,116 @@
 .active-view {
   max-width: 720px;
   margin: 0 auto;
-  padding: var(--space-8) var(--space-4);
 }
 
 .active-view-center {
-  text-align: center;
-  padding: 3rem;
-  color: var(--color-text-muted);
-}
-
-.active-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: var(--space-6);
-  gap: var(--space-4);
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-16);
 }
 
-.active-header h1 {
-  font-size: var(--text-2xl);
-  margin: 0 0 var(--space-2);
+/* ── Sticky timer bar (E5-T1) ────────────────────────────── */
+
+.active-topbar {
+  position: sticky;
+  top: var(--topbar-height); /* sit below mobile fixed topbar */
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: rgba(15, 17, 23, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+@media (min-width: 768px) {
+  .active-topbar {
+    top: 0;
+    padding: var(--space-4) var(--space-6);
+  }
+}
+
+.active-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  transition: color var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.active-breadcrumb:hover {
+  color: var(--color-accent);
+}
+
+.active-breadcrumb svg {
+  width: 16px;
+  height: 16px;
+}
+
+.active-breadcrumb-label {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .active-breadcrumb-label {
+    display: inline;
+  }
 }
 
 .active-timer {
-  font-size: var(--text-4xl);
+  flex: 1;
+  text-align: center;
+  font-size: var(--text-3xl);
   font-weight: var(--weight-bold);
   font-variant-numeric: tabular-nums;
   font-family: var(--font-mono);
   color: var(--color-accent);
   line-height: 1;
+  letter-spacing: 0.04em;
 }
 
-.active-add-exercise-row {
+.active-topbar-actions {
   display: flex;
-  gap: var(--space-3);
-  margin-bottom: var(--space-6);
-}
-
-.active-add-exercise-row select {
-  flex: 1;
-}
-
-.active-exercises {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-}
-
-.exercise-card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-5);
-  background: var(--color-surface);
-}
-
-.exercise-card-header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-4);
-}
-
-.exercise-card-name {
-  font-weight: var(--weight-semibold);
-  font-size: var(--text-base);
-  color: var(--color-text);
-}
-
-.sets-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
-  margin-bottom: var(--space-4);
-}
-
-.sets-table th,
-.sets-table td {
-  text-align: left;
-  padding: var(--space-2) var(--space-3);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.sets-table th {
-  font-weight: var(--weight-semibold);
-  color: var(--color-text-muted);
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.sets-table tr.set-done td {
-  color: var(--color-accent);
-  opacity: 0.65;
-}
-
-.sets-table tr.set-done td:last-child {
-  opacity: 1;
-}
-
-.add-set-row {
-  display: flex;
   gap: var(--space-2);
+  flex-shrink: 0;
+  min-width: 100px;
+  justify-content: flex-end;
+}
+
+.active-complete-btn {
+  white-space: nowrap;
+}
+
+.active-confirm-row {
+  display: flex;
   align-items: center;
+  gap: var(--space-2);
 }
 
-.add-set-row input {
-  width: 90px;
-}
-
-.active-hint {
-  color: var(--color-text-muted);
+.active-confirm-label {
   font-size: var(--text-sm);
-  font-style: italic;
-  padding: var(--space-4) 0;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ── Body ────────────────────────────────────────────────── */
+
+.active-body {
+  padding: var(--space-6) var(--space-4) var(--space-16);
+}
+
+@media (min-width: 768px) {
+  .active-body {
+    padding: var(--space-8) var(--space-6) var(--space-16);
+  }
 }
 
 .active-error {
@@ -123,3 +120,259 @@
   font-size: var(--text-sm);
   margin-bottom: var(--space-4);
 }
+
+/* ── Exercise picker (E5-T4) ─────────────────────────────── */
+
+.active-add-exercise-row {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.active-exercise-select {
+  flex: 1;
+}
+
+/* ── Exercise list ───────────────────────────────────────── */
+
+.active-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Exercise card (E5-T2) ───────────────────────────────── */
+
+.exercise-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-base);
+}
+
+.exercise-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--space-5);
+  gap: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.exercise-card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  flex: 1;
+}
+
+.exercise-collapse-btn {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+}
+
+.exercise-collapse-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--transition-base);
+}
+
+.exercise-collapse-btn--collapsed svg {
+  transform: rotate(-90deg);
+}
+
+.exercise-card-name {
+  font-weight: var(--weight-semibold);
+  font-size: var(--text-base);
+  color: var(--color-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.exercise-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.exercise-confirm-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.exercise-confirm-label {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ── Sets wrapper ────────────────────────────────────────── */
+
+.exercise-sets-wrapper {
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Set list (TransitionGroup container) ────────────────── */
+
+.set-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  position: relative;
+}
+
+/* ── Set row (E5-T2, E5-T3) ─────────────────────────────── */
+
+.set-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface-raised);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    background-color var(--transition-base),
+    border-color var(--transition-base),
+    opacity var(--transition-base);
+}
+
+.set-row--done {
+  background-color: rgba(66, 184, 131, 0.08);
+  border-color: rgba(66, 184, 131, 0.2);
+  opacity: 0.72;
+}
+
+.set-row__num {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  min-width: 26px;
+  font-variant-numeric: tabular-nums;
+}
+
+.set-row--done .set-row__num {
+  color: var(--color-accent);
+}
+
+.set-row__weight,
+.set-row__reps {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-text);
+  font-variant-numeric: tabular-nums;
+  flex: 1;
+}
+
+.set-row__unit {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  color: var(--color-text-muted);
+  margin-left: 2px;
+}
+
+/* ── Done toggle button (E5-T3) ──────────────────────────── */
+
+.set-row__check {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: 2px solid var(--color-border-strong);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+  flex-shrink: 0;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.set-row__check svg {
+  width: 14px;
+  height: 14px;
+}
+
+.set-row__check:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.set-row__check--done {
+  border-color: var(--color-accent);
+  background-color: var(--color-accent);
+  color: #0f1117;
+}
+
+.set-row__check--done:hover {
+  background-color: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+}
+
+/* ── Delete button ───────────────────────────────────────── */
+
+.set-row__delete {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-full);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-faint);
+  flex-shrink: 0;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.set-row__delete svg {
+  width: 14px;
+  height: 14px;
+}
+
+.set-row__delete:hover {
+  color: var(--color-danger);
+  background-color: var(--color-danger-dim);
+}
+
+/* ── Add set form ────────────────────────────────────────── */
+
+.add-set-row {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--color-border);
+}
+
+.add-set-input {
+  width: 80px;
+  text-align: center;
+  padding: var(--space-2) var(--space-3);
+}
+
+/* ── Empty / hint ────────────────────────────────────────── */
+
+.active-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-12) var(--space-6);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
