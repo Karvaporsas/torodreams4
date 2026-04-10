@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '../assets/workout-detail.css'
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useWorkout, type WorkoutDetail } from '../composables/useWorkout'
@@ -40,23 +41,23 @@ onMounted(async () => {
 
 <template>
   <div class="detail-view">
-    <router-link to="/workouts" class="back-link">← Back to history</router-link>
+    <router-link to="/workouts" class="detail-back-link">← Back to history</router-link>
 
-    <div v-if="loading" class="center">Loading…</div>
+    <div v-if="loading" class="detail-center">Loading…</div>
 
     <template v-else-if="workout">
       <h1>Workout Detail</h1>
-      <div class="meta">
+      <div class="detail-meta">
         <span>{{ formatDate(workout.startedAt) }}</span>
-        <span class="sep">·</span>
+        <span class="detail-meta-sep">·</span>
         <span>{{ formatDuration(workout.durationSeconds) }}</span>
       </div>
 
-      <div v-if="workout.exercises.length" class="exercises">
-        <div v-for="we in workout.exercises" :key="we.id" class="exercise-card">
-          <h2 class="exercise-name">{{ we.exerciseName }}</h2>
+      <div v-if="workout.exercises.length" class="detail-exercises">
+        <div v-for="we in workout.exercises" :key="we.id" class="detail-exercise-card">
+          <h2 class="detail-exercise-name">{{ we.exerciseName }}</h2>
 
-          <table v-if="we.sets.length" class="sets-table">
+          <table v-if="we.sets.length" class="detail-sets-table">
             <thead>
               <tr>
                 <th>#</th>
@@ -66,7 +67,7 @@ onMounted(async () => {
               </tr>
             </thead>
             <tbody>
-              <tr v-for="s in we.sets" :key="s.id" :class="{ done: s.isDone }">
+              <tr v-for="s in we.sets" :key="s.id" :class="{ 'set-done': s.isDone }">
                 <td>{{ s.setNumber }}</td>
                 <td>{{ s.weightKg }}</td>
                 <td>{{ s.reps }}</td>
@@ -75,104 +76,15 @@ onMounted(async () => {
             </tbody>
           </table>
 
-          <p v-else class="no-sets">No sets recorded.</p>
+          <p v-else class="detail-no-sets">No sets recorded.</p>
         </div>
       </div>
 
-      <p v-else class="hint">No exercises were added to this workout.</p>
+      <p v-else class="detail-hint">No exercises were added to this workout.</p>
     </template>
 
-    <p v-else class="error">{{ error }}</p>
+    <p v-else class="detail-error">{{ error }}</p>
   </div>
 </template>
 
-<style scoped>
-.detail-view {
-  max-width: 700px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
 
-.back-link {
-  display: inline-block;
-  margin-bottom: 1.25rem;
-  color: #42b883;
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.back-link:hover {
-  text-decoration: underline;
-}
-
-h1 {
-  margin-bottom: 0.25rem;
-}
-
-.meta {
-  color: #666;
-  font-size: 0.95rem;
-  margin-bottom: 1.5rem;
-}
-
-.sep {
-  margin: 0 0.4rem;
-}
-
-.center {
-  text-align: center;
-  padding: 3rem;
-}
-
-.exercises {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.exercise-card {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 1rem;
-  background: #fafafa;
-}
-
-.exercise-name {
-  font-size: 1rem;
-  font-weight: 600;
-  margin: 0 0 0.75rem;
-}
-
-.sets-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.sets-table th,
-.sets-table td {
-  text-align: left;
-  padding: 0.35rem 0.5rem;
-  border-bottom: 1px solid #eee;
-}
-
-.sets-table th {
-  font-weight: 600;
-  color: #555;
-}
-
-.sets-table tr.done td {
-  color: #42b883;
-}
-
-.no-sets,
-.hint {
-  color: #888;
-  font-style: italic;
-  margin: 0;
-}
-
-.error {
-  color: #c00;
-}
-</style>

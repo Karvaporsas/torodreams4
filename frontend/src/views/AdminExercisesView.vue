@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '../assets/admin-exercises.css'
 import { ref, onMounted } from 'vue'
 import { useExercises, type Exercise } from '../composables/useExercises'
 
@@ -87,19 +88,19 @@ onMounted(loadExercises)
   <div class="admin-exercises">
     <h1>Exercise Library</h1>
 
-    <p v-if="error" class="error">{{ error }}</p>
+    <p v-if="error" class="admin-error">{{ error }}</p>
     <p v-if="loading">Loading…</p>
 
-    <form class="add-form" @submit.prevent="handleAdd">
+    <form class="admin-add-form" @submit.prevent="handleAdd">
       <h2>Add Exercise</h2>
       <div class="form-row">
-        <input v-model="newName" type="text" placeholder="Name *" required />
-        <input v-model="newDescription" type="text" placeholder="Description (optional)" />
-        <button type="submit" :disabled="adding">{{ adding ? 'Adding…' : 'Add' }}</button>
+        <input v-model="newName" type="text" placeholder="Name *" required class="input" />
+        <input v-model="newDescription" type="text" placeholder="Description (optional)" class="input" />
+        <button type="submit" class="btn btn-primary btn-sm" :disabled="adding">{{ adding ? 'Adding…' : 'Add' }}</button>
       </div>
     </form>
 
-    <table v-if="exercises.length">
+    <table v-if="exercises.length" class="admin-table">
       <thead>
         <tr>
           <th>Name</th>
@@ -110,19 +111,19 @@ onMounted(loadExercises)
       <tbody>
         <tr v-for="ex in exercises" :key="ex.id">
           <template v-if="editingId === ex.id">
-            <td><input v-model="editName" type="text" required /></td>
-            <td><input v-model="editDescription" type="text" placeholder="(optional)" /></td>
+            <td><input v-model="editName" type="text" required class="input" /></td>
+            <td><input v-model="editDescription" type="text" placeholder="(optional)" class="input" /></td>
             <td class="actions">
-              <button class="btn-save" @click="handleUpdate(ex.id)">Save</button>
-              <button class="btn-cancel" @click="cancelEdit">Cancel</button>
+              <button class="btn btn-primary btn-sm" @click="handleUpdate(ex.id)">Save</button>
+              <button class="btn btn-secondary btn-sm" @click="cancelEdit">Cancel</button>
             </td>
           </template>
           <template v-else>
             <td>{{ ex.name }}</td>
             <td class="description">{{ ex.description ?? '—' }}</td>
             <td class="actions">
-              <button class="btn-edit" @click="startEdit(ex)">Edit</button>
-              <button class="btn-delete" @click="handleDelete(ex.id, ex.name)">Delete</button>
+              <button class="btn btn-accent-ghost btn-sm" @click="startEdit(ex)">Edit</button>
+              <button class="btn btn-danger btn-sm" @click="handleDelete(ex.id, ex.name)">Delete</button>
             </td>
           </template>
         </tr>
@@ -133,100 +134,4 @@ onMounted(loadExercises)
   </div>
 </template>
 
-<style scoped>
-.admin-exercises {
-  max-width: 760px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
 
-h1 {
-  margin-bottom: 1.5rem;
-}
-
-h2 {
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-}
-
-.add-form {
-  background: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.form-row {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-.form-row input {
-  flex: 1;
-  min-width: 140px;
-  padding: 0.45rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.95rem;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.95rem;
-}
-
-th, td {
-  text-align: left;
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid #e0e0e0;
-}
-
-th {
-  background: #f0f0f0;
-  font-weight: 600;
-}
-
-.description {
-  color: #666;
-}
-
-td input {
-  width: 100%;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 0.9rem;
-}
-
-.actions {
-  display: flex;
-  gap: 0.4rem;
-}
-
-button {
-  padding: 0.35rem 0.8rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.875rem;
-  color: white;
-}
-
-.btn-edit   { background: #42b883; }
-.btn-delete { background: #c0392b; }
-.btn-save   { background: #2980b9; }
-.btn-cancel { background: #888; }
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error {
-  color: #c00;
-  margin-bottom: 1rem;
-}
-</style>
