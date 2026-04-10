@@ -1,0 +1,104 @@
+/* WorkoutDetailView ─────────────────────────────────────── */
+
+.detail-view {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--space-8) var(--space-4);
+}
+
+.detail-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: color var(--transition-fast);
+}
+
+.detail-back-link:hover {
+  color: var(--color-accent);
+}
+
+.detail-view h1 {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-2);
+}
+
+.detail-meta {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  margin-bottom: var(--space-6);
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.detail-meta-sep {
+  color: var(--color-text-faint);
+}
+
+.detail-center {
+  text-align: center;
+  padding: 3rem;
+  color: var(--color-text-muted);
+}
+
+.detail-exercises {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.detail-exercise-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  background: var(--color-surface);
+}
+
+.detail-exercise-name {
+  font-size: var(--text-base);
+  font-weight: var(--weight-semibold);
+  margin: 0 0 var(--space-4);
+  color: var(--color-text);
+}
+
+.detail-sets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.detail-sets-table th,
+.detail-sets-table td {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.detail-sets-table th {
+  font-weight: var(--weight-semibold);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detail-sets-table tr.set-done td {
+  color: var(--color-accent);
+}
+
+.detail-no-sets,
+.detail-hint {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+  margin: 0;
+}
+
+.detail-error {
+  color: var(--color-danger);
+  font-size: var(--text-sm);
+}

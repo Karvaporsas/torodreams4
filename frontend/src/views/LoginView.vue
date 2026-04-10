@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '../assets/login.css'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -33,71 +34,32 @@ async function handleLogin() {
 </script>
 
 <template>
-  <div class="login-container">
-    <h1>Sign in</h1>
-    <form @submit.prevent="handleLogin">
-      <label>
-        Username
-        <input v-model="username" type="text" autocomplete="username" required />
-      </label>
-      <label>
-        Password
-        <input v-model="password" type="password" autocomplete="current-password" required />
-      </label>
-      <p v-if="error" class="error">{{ error }}</p>
-      <button type="submit" :disabled="loading">
-        {{ loading ? 'Signing in…' : 'Sign in' }}
-      </button>
-    </form>
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-logo">
+        <span class="login-logo-icon">◆</span>
+        <span class="login-logo-text">ToroFit</span>
+      </div>
+      <div class="login-card card">
+        <h1>Sign in</h1>
+        <form class="login-form" @submit.prevent="handleLogin">
+          <div class="form-group">
+            <label class="form-label" for="username">Username</label>
+            <input id="username" v-model="username" type="text" class="input" autocomplete="username" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input id="password" v-model="password" type="password" class="input" autocomplete="current-password" required />
+          </div>
+          <p v-if="error" class="login-error">{{ error }}</p>
+          <button type="submit" class="btn btn-primary login-submit" :disabled="loading">
+            <span v-if="loading" class="spinner"></span>
+            {{ loading ? 'Signing in…' : 'Sign in' }}
+          </button>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
-<style scoped>
-.login-container {
-  max-width: 360px;
-  margin: 8rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.9rem;
-}
-
-input {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 1rem;
-}
-
-button {
-  padding: 0.6rem;
-  background: #42b883;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  font-size: 1rem;
-  cursor: pointer;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error {
-  color: #c00;
-  font-size: 0.875rem;
-}
-</style>
