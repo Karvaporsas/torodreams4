@@ -28,7 +28,7 @@ custom properties so the project stays dependency-light.
 
 ---
 
-### Epic 1 — Design System & Global Styles
+### Epic 1 — Design System & Global Styles ✅ DONE
 
 Establish the visual foundation used by all other epics.
 
@@ -45,7 +45,7 @@ Establish the visual foundation used by all other epics.
 
 ---
 
-### Epic 2 — App Shell & Navigation
+### Epic 2 — App Shell & Navigation ✅ DONE
 
 Wrap all authenticated views in a persistent shell with navigation.
 
