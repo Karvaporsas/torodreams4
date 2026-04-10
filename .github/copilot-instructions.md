@@ -29,4 +29,5 @@ npm run type-check  # TypeScript type checking
 - Backend uses .NET 9 minimal APIs (no Controllers).
 - Frontend uses Vue 3 Composition API with `<script setup lang="ts">`.
 - API base URL is hardcoded as `http://localhost:5000` in the frontend for local dev.
+- Frontend CSS lives exclusively in dedicated `.css` files under `src/assets/`. Do **not** use `<style>` blocks inside `.vue` components.
 
