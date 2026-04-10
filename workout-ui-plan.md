@@ -93,7 +93,7 @@ Replace table with a card-based, visually rich history list.
 
 ---
 
-### Epic 5 — Active Workout Page
+### Epic 5 — Active Workout Page ✅ DONE
 
 Make the workout logger feel like a native app.
 
