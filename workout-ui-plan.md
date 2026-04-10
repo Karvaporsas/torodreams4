@@ -28,7 +28,7 @@ custom properties so the project stays dependency-light.
 
 ---
 
-### Epic 1 — Design System & Global Styles
+### Epic 1 — Design System & Global Styles ✅ DONE
 
 Establish the visual foundation used by all other epics.
 
@@ -45,7 +45,7 @@ Establish the visual foundation used by all other epics.
 
 ---
 
-### Epic 2 — App Shell & Navigation
+### Epic 2 — App Shell & Navigation ✅ DONE
 
 Wrap all authenticated views in a persistent shell with navigation.
 
@@ -62,7 +62,7 @@ Wrap all authenticated views in a persistent shell with navigation.
 
 ---
 
-### Epic 3 — Home Page
+### Epic 3 — Home Page ✅ DONE
 
 Replace the placeholder HelloWorld component with a real dashboard home.
 
@@ -70,10 +70,10 @@ Replace the placeholder HelloWorld component with a real dashboard home.
 
 | ID | Task |
 |----|------|
-| E3-T1 | Remove `HelloWorld.vue`, `TheWelcome.vue`, `WelcomeItem.vue`, and icon components that are no longer needed |
-| E3-T2 | Redesign `HomeView.vue` — hero section: greeting ("Welcome back"), large CTA button "Start New Workout" (or "Continue Active Workout" if one exists), and a compact recent-workouts panel (last 3 entries as small cards) |
-| E3-T3 | Add quick-stats strip: total workouts count, total duration this week, streak badge |
-| E3-T4 | Animate the hero CTA button with a subtle pulse when there's no active workout |
+| E3-T1 | ✅ Remove `HelloWorld.vue`, `TheWelcome.vue`, `WelcomeItem.vue`, and icon components that are no longer needed |
+| E3-T2 | ✅ Redesign `HomeView.vue` — hero section: greeting ("Welcome back"), large CTA button "Start New Workout" (or "Continue Active Workout" if one exists), and a compact recent-workouts panel (last 3 entries as small cards) |
+| E3-T3 | ✅ Add quick-stats strip: total workouts count, total duration this week, streak badge |
+| E3-T4 | ✅ Animate the hero CTA button with a subtle pulse when there's no active workout |
 
 ---
 
