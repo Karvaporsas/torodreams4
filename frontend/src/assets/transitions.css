@@ -1,0 +1,120 @@
+/* ============================================================
+   ToroFit Transitions — Vue page & component transitions
+   ============================================================ */
+
+/* ── Page fade-slide (used in App.vue RouterView) ────────── */
+
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity var(--transition-slow),
+    transform var(--transition-slow);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* ── Fade (generic overlay/modal) ───────────────────────── */
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity var(--transition-base);
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* ── Slide-up (set rows, toasts, drawers) ────────────────── */
+
+.slide-up-enter-active {
+  transition: opacity var(--transition-base), transform var(--transition-bounce);
+}
+
+.slide-up-leave-active {
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.slide-up-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+/* ── Slide-down (dropdowns, alerts) ─────────────────────── */
+
+.slide-down-enter-active {
+  transition: opacity var(--transition-base), transform var(--transition-base);
+}
+
+.slide-down-leave-active {
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.slide-down-enter-from {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+.slide-down-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+/* ── List item transitions ───────────────────────────────── */
+
+.list-enter-active {
+  transition: opacity var(--transition-base), transform var(--transition-bounce);
+}
+
+.list-leave-active {
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+  position: absolute;
+  width: 100%;
+}
+
+.list-enter-from {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+}
+
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(-4px) scale(0.97);
+}
+
+.list-move {
+  transition: transform var(--transition-base);
+}
+
+/* ── Collapse (exercise sets expand/collapse) ────────────── */
+
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: max-height var(--transition-slow), opacity var(--transition-base);
+  overflow: hidden;
+}
+
+.collapse-enter-from,
+.collapse-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+
+.collapse-enter-to,
+.collapse-leave-from {
+  max-height: 600px;
+  opacity: 1;
+}
