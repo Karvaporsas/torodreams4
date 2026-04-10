@@ -110,7 +110,7 @@ Make the workout logger feel like a native app.
 
 ---
 
-### Epic 6 — Workout Detail Page
+### Epic 6 — Workout Detail Page ✅ DONE
 
 Polished read-only summary of a completed workout.
 
@@ -125,7 +125,7 @@ Polished read-only summary of a completed workout.
 
 ---
 
-### Epic 7 — Login Page Polish
+### Epic 7 — Login Page Polish ✅ DONE
 
 The login page is full-screen (no shell) — give it a matching premium look.
 
