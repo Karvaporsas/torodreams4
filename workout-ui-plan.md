@@ -77,7 +77,7 @@ Replace the placeholder HelloWorld component with a real dashboard home.
 
 ---
 
-### Epic 4 — Workouts History Page
+### Epic 4 — Workouts History Page ✅ DONE
 
 Replace table with a card-based, visually rich history list.
 
