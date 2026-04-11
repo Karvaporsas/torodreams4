@@ -88,19 +88,19 @@ Keep `Exercise` as the root entity, but expand it so the library is actually sea
 - **E1-T5** Update API DTOs and request contracts so frontend/admin screens can read and edit the richer model. **Done**
 - **E1-T6** Replace unsafe hard-delete behavior with archive or guarded delete logic when an exercise is already referenced by workouts. **Done**
 
-### Epic 2 - Build the Import and Seed Pipeline
+### Epic 2 - Build the Import and Seed Pipeline **(Done)**
 
 **Outcome:** every environment can load the same exercise catalog repeatedly without duplicate rows.
 
 **Tasks**
 
-- **E2-T1** Create a versioned source file for the master exercise catalog (recommended: JSON in `backend\SeedData\`).
-- **E2-T2** Define the import contract with stable slugs, categories, aliases, muscles, and equipment.
-- **E2-T3** Implement an idempotent import service that upserts by `Slug` instead of by display name.
-- **E2-T4** Add a CLI entry point, such as `dotnet run -- --import-exercises`, following the existing CLI pattern already used for user/role management.
-- **E2-T5** Add validation so the import fails loudly on duplicate slugs, missing required metadata, invalid enums, or malformed aliases.
-- **E2-T6** Decide whether first-run environments import automatically or only through explicit CLI/admin action.
-- **E2-T7** Add automated tests for import idempotency and for safe re-import after catalog edits.
+- **E2-T1** Create a versioned source file for the master exercise catalog (recommended: JSON in `backend\SeedData\`). **Done**
+- **E2-T2** Define the import contract with stable slugs, categories, aliases, muscles, and equipment. **Done**
+- **E2-T3** Implement an idempotent import service that upserts by `Slug` instead of by display name. **Done**
+- **E2-T4** Add a CLI entry point, such as `dotnet run -- --import-exercises`, following the existing CLI pattern already used for user/role management. **Done**
+- **E2-T5** Add validation so the import fails loudly on duplicate slugs, missing required metadata, invalid enums, or malformed aliases. **Done**
+- **E2-T6** Decide whether first-run environments import automatically or only through explicit CLI/admin action. **Done** — explicit CLI import only for v1.
+- **E2-T7** Add automated tests for import idempotency and for safe re-import after catalog edits. **Done**
 
 ### Epic 3 - Make Exercise Search and Insert Fast in Workout Flow
 
