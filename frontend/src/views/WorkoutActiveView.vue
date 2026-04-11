@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import '../assets/workout-active.css'
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter, RouterLink } from 'vue-router'
 import { useWorkout, getActiveWorkoutId, type WorkoutDetail, type WorkoutExercise } from '../composables/useWorkout'
 import { useExercises, type Exercise } from '../composables/useExercises'
 
 const router = useRouter()
 const { fetchWorkout, addExercise, removeExercise, addSet, updateSet, deleteSet, completeWorkout } = useWorkout()
-const { fetchExercises } = useExercises()
+const { fetchExerciseSearch } = useExercises()
 
 const workout = ref<WorkoutDetail | null>(null)
-const exercises = ref<Exercise[]>([])
 const loading = ref(true)
 const error = ref('')
 const completing = ref(false)
@@ -38,7 +37,48 @@ const elapsedLabel = computed(() => {
 })
 
 // ── Exercise picker ──────────────────────────────────────────
-const selectedExerciseId = ref<number | ''>('')
+const exerciseSearch = ref('')
+const exerciseCategory = ref('')
+const exerciseEquipment = ref('')
+const searchResults = ref<Exercise[]>([])
+const searchLoading = ref(false)
+const searchError = ref('')
+const searchHasMore = ref(false)
+const searchTotalCount = ref(0)
+const addingExerciseId = ref<number | null>(null)
+let searchDebounceHandle: ReturnType<typeof setTimeout> | null = null
+
+const categoryOptions = [
+  'Arms',
+  'Back',
+  'Carry',
+  'Chest',
+  'Conditioning',
+  'Core',
+  'Hinge',
+  'Kettlebell',
+  'Locomotion',
+  'Lower Body Isolation',
+  'Lunge',
+  'Olympic Lift',
+  'Plyometric',
+  'Shoulders',
+  'Squat',
+]
+
+const equipmentOptions = [
+  'Barbell',
+  'Battle Ropes',
+  'Bodyweight',
+  'Cable',
+  'Cardio Machine',
+  'Dumbbell',
+  'Jump Rope',
+  'Kettlebell',
+  'Machine',
+  'Medicine Ball',
+  'Sled',
+]
 
 // ── Per-exercise add-set forms ───────────────────────────────
 const setForms = ref<Record<number, { weightKg: string; reps: string }>>({})
@@ -49,10 +89,10 @@ function ensureSetForm(weId: number) {
   }
 }
 
-const availableExercises = computed(() => {
-  if (!workout.value) return exercises.value
-  const used = new Set(workout.value.exercises.map((we) => we.exerciseId))
-  return exercises.value.filter((e) => !used.has(e.id))
+const usedExerciseIds = computed(() => new Set(workout.value?.exercises.map((we) => we.exerciseId) ?? []))
+
+const availableSearchResults = computed(() => {
+  return searchResults.value.filter((exercise) => !usedExerciseIds.value.has(exercise.id))
 })
 
 // ── Inline confirm states (E5-T6) ────────────────────────────
@@ -73,16 +113,43 @@ function toggleCollapse(weId: number) {
 }
 
 // ── Actions ──────────────────────────────────────────────────
-async function handleAddExercise() {
-  if (!workout.value || selectedExerciseId.value === '') return
+async function loadSearchResults() {
+  searchLoading.value = true
+  searchError.value = ''
+  try {
+    const response = await fetchExerciseSearch({
+      search: exerciseSearch.value.trim() || undefined,
+      category: exerciseCategory.value || undefined,
+      equipment: exerciseEquipment.value || undefined,
+      page: 1,
+      pageSize: 8,
+      sort: 'name',
+    })
+
+    searchResults.value = response.items
+    searchHasMore.value = response.hasMore
+    searchTotalCount.value = response.totalCount
+  } catch {
+    searchError.value = 'Failed to load exercises.'
+  } finally {
+    searchLoading.value = false
+  }
+}
+
+async function handleAddExercise(exercise: Exercise) {
+  if (!workout.value) return
+  addingExerciseId.value = exercise.id
   error.value = ''
   try {
-    const we = await addExercise(workout.value.id, Number(selectedExerciseId.value))
+    const we = await addExercise(workout.value.id, exercise.id)
     workout.value.exercises.push(we)
     ensureSetForm(we.id)
-    selectedExerciseId.value = ''
+    searchResults.value = searchResults.value.filter((item) => item.id !== exercise.id)
+    searchTotalCount.value = Math.max(0, searchTotalCount.value - 1)
   } catch {
     error.value = 'Failed to add exercise.'
+  } finally {
+    addingExerciseId.value = null
   }
 }
 
@@ -162,11 +229,10 @@ onMounted(async () => {
     return
   }
   try {
-    const [w, ex] = await Promise.all([fetchWorkout(id), fetchExercises()])
-    workout.value = w
-    exercises.value = ex
+    workout.value = await fetchWorkout(id)
     workout.value.exercises.forEach((we) => ensureSetForm(we.id))
-    startTimer(w.startedAt)
+    startTimer(workout.value.startedAt)
+    await loadSearchResults()
   } catch {
     error.value = 'Failed to load workout.'
   } finally {
@@ -176,6 +242,14 @@ onMounted(async () => {
 
 onUnmounted(() => {
   if (timerHandle) clearInterval(timerHandle)
+  if (searchDebounceHandle) clearTimeout(searchDebounceHandle)
+})
+
+watch([exerciseSearch, exerciseCategory, exerciseEquipment], () => {
+  if (searchDebounceHandle) clearTimeout(searchDebounceHandle)
+  searchDebounceHandle = setTimeout(() => {
+    void loadSearchResults()
+  }, 250)
 })
 </script>
 
@@ -226,18 +300,55 @@ onUnmounted(() => {
         <p v-if="error" class="active-error">{{ error }}</p>
 
         <!-- Exercise picker (E5-T4) -->
-        <div class="active-add-exercise-row">
-          <select v-model="selectedExerciseId" class="input select active-exercise-select">
-            <option value="">— pick an exercise —</option>
-            <option v-for="e in availableExercises" :key="e.id" :value="e.id">{{ e.name }}</option>
-          </select>
-          <button
-            class="btn btn-accent-ghost"
-            :disabled="selectedExerciseId === ''"
-            @click="handleAddExercise"
-          >
-            + Add
-          </button>
+        <div class="active-picker">
+          <div class="active-picker-controls">
+            <input
+              v-model="exerciseSearch"
+              type="text"
+              class="input active-picker-search"
+              placeholder="Search exercises by name, alias, muscle, or equipment"
+            />
+            <select v-model="exerciseCategory" class="input select active-picker-filter">
+              <option value="">All categories</option>
+              <option v-for="option in categoryOptions" :key="option" :value="option">{{ option }}</option>
+            </select>
+            <select v-model="exerciseEquipment" class="input select active-picker-filter">
+              <option value="">All equipment</option>
+              <option v-for="option in equipmentOptions" :key="option" :value="option">{{ option }}</option>
+            </select>
+          </div>
+
+          <p v-if="searchError" class="active-picker-feedback active-picker-feedback--error">{{ searchError }}</p>
+          <p v-else-if="searchLoading" class="active-picker-feedback">Searching exercises…</p>
+          <p v-else-if="availableSearchResults.length" class="active-picker-feedback">
+            Showing {{ availableSearchResults.length }} of {{ searchTotalCount }} matching exercises.
+            <span v-if="searchHasMore">Refine your search to narrow the list.</span>
+          </p>
+          <p v-else class="active-picker-feedback">
+            {{ searchTotalCount === 0 ? 'No exercises matched your search.' : 'All matching exercises are already in this workout.' }}
+          </p>
+
+          <div v-if="availableSearchResults.length" class="active-picker-results" role="listbox" aria-label="Exercise search results">
+            <button
+              v-for="exercise in availableSearchResults"
+              :key="exercise.id"
+              type="button"
+              class="active-picker-result"
+              :disabled="addingExerciseId === exercise.id"
+              @click="handleAddExercise(exercise)"
+            >
+              <span class="active-picker-result-main">
+                <span class="active-picker-result-name">{{ exercise.name }}</span>
+                <span class="active-picker-result-meta">
+                  {{ exercise.primaryMuscleGroup }} • {{ exercise.movementPattern }} • {{ exercise.primaryEquipment ?? 'Bodyweight' }}
+                </span>
+                <span v-if="exercise.description" class="active-picker-result-description">{{ exercise.description }}</span>
+              </span>
+              <span class="active-picker-result-action">
+                {{ addingExerciseId === exercise.id ? 'Adding…' : '+ Add' }}
+              </span>
+            </button>
+          </div>
         </div>
 
         <!-- Exercise list (E5-T2, E5-T5) -->

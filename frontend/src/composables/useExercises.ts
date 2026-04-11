@@ -43,6 +43,27 @@ export interface ExerciseInput {
   secondaryMuscleGroups?: string[]
 }
 
+export interface ExerciseSearchParams {
+  search?: string
+  category?: string
+  movementPattern?: string
+  equipment?: string
+  bodyRegion?: string
+  trainingStyle?: string
+  sort?: 'name' | 'name-desc' | 'updated' | 'updated-desc'
+  page?: number
+  pageSize?: number
+  includeArchived?: boolean
+}
+
+export interface ExerciseSearchResponse {
+  items: Exercise[]
+  page: number
+  pageSize: number
+  totalCount: number
+  hasMore: boolean
+}
+
 export function useExercises() {
   const { getToken } = useAuth()
   const router = useRouter()
@@ -60,11 +81,32 @@ export function useExercises() {
     return res.json() as Promise<T>
   }
 
-  async function fetchExercises(includeArchived = false): Promise<Exercise[]> {
-    const res = await fetch(`${API_BASE}/api/exercises?includeArchived=${includeArchived}`, {
+  function buildQuery(params: ExerciseSearchParams = {}): string {
+    const query = new URLSearchParams()
+    if (params.search) query.set('search', params.search)
+    if (params.category) query.set('category', params.category)
+    if (params.movementPattern) query.set('movementPattern', params.movementPattern)
+    if (params.equipment) query.set('equipment', params.equipment)
+    if (params.bodyRegion) query.set('bodyRegion', params.bodyRegion)
+    if (params.trainingStyle) query.set('trainingStyle', params.trainingStyle)
+    if (params.sort) query.set('sort', params.sort)
+    if (params.page) query.set('page', String(params.page))
+    if (params.pageSize) query.set('pageSize', String(params.pageSize))
+    if (params.includeArchived) query.set('includeArchived', 'true')
+    const search = query.toString()
+    return search ? `?${search}` : ''
+  }
+
+  async function fetchExerciseSearch(params: ExerciseSearchParams = {}): Promise<ExerciseSearchResponse> {
+    const res = await fetch(`${API_BASE}/api/exercises${buildQuery(params)}`, {
       headers: authHeaders(),
     })
-    return handleResponse<Exercise[]>(res)
+    return handleResponse<ExerciseSearchResponse>(res)
+  }
+
+  async function fetchExercises(includeArchived = false): Promise<Exercise[]> {
+    const response = await fetchExerciseSearch({ includeArchived, pageSize: 250 })
+    return response.items
   }
 
   async function createExercise(input: ExerciseInput): Promise<Exercise> {
@@ -97,5 +139,5 @@ export function useExercises() {
     if (!res.ok) throw new Error(`Request failed: ${res.status}`)
   }
 
-  return { fetchExercises, createExercise, updateExercise, deleteExercise }
+  return { fetchExercises, fetchExerciseSearch, createExercise, updateExercise, deleteExercise }
 }
