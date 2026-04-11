@@ -129,17 +129,17 @@ Keep `Exercise` as the root entity, but expand it so the library is actually sea
 - **E4-T5** Add form validation and duplicate-name or duplicate-slug protection. **Done**
 - **E4-T6** Add pagination or virtualized rendering if the admin grid becomes large. **Done**
 
-### Epic 5 - Quality, Backfill, and Release Safety
+### Epic 5 - Quality, Backfill, and Release Safety **(Done)**
 
 **Outcome:** the expanded library is safe to ship and easy to evolve.
 
 **Tasks**
 
-- **E5-T1** Backfill existing exercises into the new schema with generated slugs and default metadata where necessary.
-- **E5-T2** Update backend tests to cover search, archive rules, import behavior, and richer admin CRUD.
-- **E5-T3** Add frontend tests for searchable picker and admin edit flows if frontend test infrastructure already exists; otherwise cover via current supported checks.
-- **E5-T4** Document the import command, catalog format, and admin workflow in the repo docs.
-- **E5-T5** Define a maintenance process for future catalog additions so ad hoc production-only edits do not become the source of truth.
+- **E5-T1** Backfill existing exercises into the new schema with generated slugs and default metadata where necessary. **Done**
+- **E5-T2** Update backend tests to cover search, archive rules, import behavior, and richer admin CRUD. **Done**
+- **E5-T3** Add frontend tests for searchable picker and admin edit flows if frontend test infrastructure already exists; otherwise cover via current supported checks. **Done** — no frontend test runner exists, so coverage remains via the supported build and type-check commands.
+- **E5-T4** Document the import command, catalog format, and admin workflow in the repo docs. **Done**
+- **E5-T5** Define a maintenance process for future catalog additions so ad hoc production-only edits do not become the source of truth. **Done**
 
 ## Recommended Delivery Order
 

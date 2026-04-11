@@ -45,6 +45,19 @@ if (args.Length > 0 && args[0] == "--import-exercises")
     return await ExerciseCatalogImporterCommand.RunAsync(args, config);
 }
 
+// CLI mode: dotnet run -- --backfill-exercises
+if (args.Length > 0 && args[0] == "--backfill-exercises")
+{
+    var config = new ConfigurationBuilder()
+        .SetBasePath(Directory.GetCurrentDirectory())
+        .AddJsonFile("appsettings.json", optional: false)
+        .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? "Production"}.json", optional: true)
+        .AddEnvironmentVariables()
+        .Build();
+
+    return await ExerciseCatalogBackfillCommand.RunAsync(args, config);
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 if (!builder.Environment.IsEnvironment("Testing"))

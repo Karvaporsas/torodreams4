@@ -121,7 +121,7 @@ public static class ExerciseCatalogMapper
     private static string? NormalizeOptional(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
-    private static string Slugify(string value)
+    public static string Slugify(string value)
     {
         var normalized = value.Trim().ToLowerInvariant().Normalize(NormalizationForm.FormD);
         var builder = new StringBuilder();
