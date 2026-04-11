@@ -10,6 +10,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Exercise> Exercises => Set<Exercise>();
     public DbSet<ExerciseAlias> ExerciseAliases => Set<ExerciseAlias>();
     public DbSet<ExerciseSecondaryMuscle> ExerciseSecondaryMuscles => Set<ExerciseSecondaryMuscle>();
+    public DbSet<ExerciseImportBatch> ExerciseImportBatches => Set<ExerciseImportBatch>();
     public DbSet<Workout> Workouts => Set<Workout>();
     public DbSet<WorkoutExercise> WorkoutExercises => Set<WorkoutExercise>();
     public DbSet<WorkoutSet> WorkoutSets => Set<WorkoutSet>();
@@ -130,6 +131,29 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .WithMany(e => e.SecondaryMuscles)
             .HasForeignKey(m => m.ExerciseId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ExerciseImportBatch>()
+            .HasIndex(batch => batch.ImportedAtUtc);
+
+        modelBuilder.Entity<ExerciseImportBatch>()
+            .Property(batch => batch.CatalogVersion)
+            .HasMaxLength(100);
+
+        modelBuilder.Entity<ExerciseImportBatch>()
+            .Property(batch => batch.CatalogPath)
+            .HasMaxLength(500);
+
+        modelBuilder.Entity<ExerciseImportBatch>()
+            .Property(batch => batch.Status)
+            .HasMaxLength(50);
+
+        modelBuilder.Entity<ExerciseImportBatch>()
+            .Property(batch => batch.TriggeredBy)
+            .HasMaxLength(200);
+
+        modelBuilder.Entity<ExerciseImportBatch>()
+            .Property(batch => batch.Message)
+            .HasMaxLength(2000);
 
         // Workout → User
         modelBuilder.Entity<Workout>()

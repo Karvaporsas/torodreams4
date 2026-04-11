@@ -113,6 +113,21 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
     }
 
     [Fact]
+    public async Task CreateExercise_WithDuplicateName_ReturnsBadRequest()
+    {
+        var res = await AdminClient().PostAsJsonAsync(
+            "/api/exercises",
+            new
+            {
+                name = " bench press ",
+                slug = "bench-press-variation"
+            });
+
+        Assert.Equal(HttpStatusCode.BadRequest, res.StatusCode);
+        Assert.Contains("Exercise name must be unique.", await res.Content.ReadAsStringAsync());
+    }
+
+    [Fact]
     public async Task DeleteExercise_WhenReferenced_ArchivesInstead()
     {
         var client = AdminClient();
@@ -224,6 +239,8 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
         string SearchTerms,
         DateTime CreatedAtUtc,
         DateTime UpdatedAtUtc,
+        bool IsReferencedByWorkouts,
+        int WorkoutReferenceCount,
         List<string> Aliases,
         List<string> SecondaryMuscleGroups);
 

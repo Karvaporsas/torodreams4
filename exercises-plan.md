@@ -116,18 +116,18 @@ Keep `Exercise` as the root entity, but expand it so the library is actually sea
 - **E3-T6** Preserve existing workout insertion behavior, ordering, and set tracking after the picker changes. **Done**
 - **E3-T7** Add empty, loading, and error states that make a large searchable library usable on mobile. **Done**
 
-### Epic 4 - Upgrade the Admin Exercise Area
+### Epic 4 - Upgrade the Admin Exercise Area **(Done)**
 
 **Outcome:** admins can maintain the catalog safely after the initial import.
 
 **Tasks**
 
-- **E4-T1** Expand the admin form from name/description to full metadata editing.
-- **E4-T2** Add admin-side search, filters, and sorting so admins can manage a large library efficiently.
-- **E4-T3** Add archive/unarchive controls and surface whether an exercise is already referenced by workouts.
-- **E4-T4** Add bulk import/re-import controls or at minimum a visible status page describing current catalog version and last import result.
-- **E4-T5** Add form validation and duplicate-name or duplicate-slug protection.
-- **E4-T6** Add pagination or virtualized rendering if the admin grid becomes large.
+- **E4-T1** Expand the admin form from name/description to full metadata editing. **Done**
+- **E4-T2** Add admin-side search, filters, and sorting so admins can manage a large library efficiently. **Done**
+- **E4-T3** Add archive/unarchive controls and surface whether an exercise is already referenced by workouts. **Done**
+- **E4-T4** Add bulk import/re-import controls or at minimum a visible status page describing current catalog version and last import result. **Done**
+- **E4-T5** Add form validation and duplicate-name or duplicate-slug protection. **Done**
+- **E4-T6** Add pagination or virtualized rendering if the admin grid becomes large. **Done**
 
 ### Epic 5 - Quality, Backfill, and Release Safety
 

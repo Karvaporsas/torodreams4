@@ -1,3 +1,6 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using ToroFitDreaming4.Data;
@@ -92,12 +95,84 @@ public static class ExerciseEndpoints
                 .Take(pageSize)
                 .ToListAsync();
 
+            var referenceCounts = await GetWorkoutReferenceCountsAsync(
+                db,
+                exercises.Select(exercise => exercise.Id).ToArray());
+
             return Results.Ok(new ExerciseSearchResponse(
-                exercises.Select(ToDto).ToList(),
+                exercises.Select(exercise => ToDto(exercise, referenceCounts.GetValueOrDefault(exercise.Id))).ToList(),
                 page,
                 pageSize,
                 totalCount,
                 (page * pageSize) < totalCount));
+        });
+
+        app.MapGet("/api/admin/exercises/catalog-status", [Authorize(Policy = "AdminOnly")] async (
+            AppDbContext db,
+            CancellationToken cancellationToken) =>
+        {
+            var adminService = new ExerciseCatalogAdminService(db);
+            var status = await adminService.GetStatusAsync(cancellationToken);
+            return Results.Ok(status);
+        });
+
+        app.MapPost("/api/admin/exercises/reimport", [Authorize(Policy = "AdminOnly")] async (
+            HttpContext httpContext,
+            AppDbContext db,
+            CancellationToken cancellationToken) =>
+        {
+            var adminService = new ExerciseCatalogAdminService(db);
+            var catalogPath = adminService.GetDefaultCatalogPath();
+            var triggeredBy = httpContext.User.FindFirstValue(ClaimTypes.NameIdentifier)
+                ?? httpContext.User.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                ?? "admin";
+
+            if (!File.Exists(catalogPath))
+            {
+                await adminService.RecordFailureAsync(
+                    catalogPath,
+                    null,
+                    triggeredBy,
+                    "Catalog file was not found.",
+                    cancellationToken);
+
+                return Results.Problem(detail: "Catalog file was not found.");
+            }
+
+            try
+            {
+                var importer = new ExerciseCatalogImportService(db);
+                var result = await importer.ImportFromFileAsync(catalogPath, cancellationToken);
+                await adminService.RecordSuccessAsync(catalogPath, triggeredBy, result, cancellationToken);
+
+                return Results.Ok(await adminService.GetStatusAsync(cancellationToken));
+            }
+            catch (ExerciseCatalogValidationException ex)
+            {
+                db.ChangeTracker.Clear();
+
+                await adminService.RecordFailureAsync(
+                    catalogPath,
+                    await adminService.TryReadCatalogVersionAsync(catalogPath, cancellationToken),
+                    triggeredBy,
+                    ex.Message,
+                    cancellationToken);
+
+                return Results.BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex) when (ex is IOException or JsonException)
+            {
+                db.ChangeTracker.Clear();
+
+                await adminService.RecordFailureAsync(
+                    catalogPath,
+                    await adminService.TryReadCatalogVersionAsync(catalogPath, cancellationToken),
+                    triggeredBy,
+                    ex.Message,
+                    cancellationToken);
+
+                return Results.Problem(detail: ex.Message);
+            }
         });
 
         // POST /api/exercises — admin only
@@ -111,6 +186,11 @@ public static class ExerciseEndpoints
             }
 
             var normalized = NormalizeRequest(req);
+            if (await NameExistsAsync(db, normalized.Name))
+            {
+                return Results.BadRequest(new { error = "Exercise name must be unique." });
+            }
+
             var slugExists = await db.Exercises.AnyAsync(e => e.Slug == normalized.Slug);
             if (slugExists)
             {
@@ -126,7 +206,7 @@ public static class ExerciseEndpoints
 
             return Results.Created(
                 $"/api/exercises/{exercise.Id}",
-                ToDto(exercise));
+                ToDto(exercise, 0));
         });
 
         // PUT /api/exercises/{id} — admin only
@@ -151,6 +231,11 @@ public static class ExerciseEndpoints
             }
 
             var normalized = NormalizeRequest(req);
+            if (await NameExistsAsync(db, normalized.Name, id))
+            {
+                return Results.BadRequest(new { error = "Exercise name must be unique." });
+            }
+
             var slugExists = await db.Exercises.AnyAsync(e => e.Id != id && e.Slug == normalized.Slug);
             if (slugExists)
             {
@@ -163,7 +248,8 @@ public static class ExerciseEndpoints
 
             await db.SaveChangesAsync();
 
-            return Results.Ok(ToDto(exercise));
+            var referenceCount = await db.WorkoutExercises.CountAsync(we => we.ExerciseId == id);
+            return Results.Ok(ToDto(exercise, referenceCount));
         });
 
         // DELETE /api/exercises/{id} — admin only
@@ -181,8 +267,8 @@ public static class ExerciseEndpoints
                 return Results.NotFound();
             }
 
-            var isReferenced = await db.WorkoutExercises.AnyAsync(we => we.ExerciseId == id);
-            if (isReferenced)
+            var referenceCount = await db.WorkoutExercises.CountAsync(we => we.ExerciseId == id);
+            if (referenceCount > 0)
             {
                 exercise.IsArchived = true;
                 exercise.UpdatedAtUtc = DateTime.UtcNow;
@@ -192,7 +278,7 @@ public static class ExerciseEndpoints
                 return Results.Ok(new DeleteExerciseResult(
                     true,
                     "Exercise is used by workouts and was archived instead of deleted.",
-                    ToDto(exercise)));
+                    ToDto(exercise, referenceCount)));
             }
 
             db.Exercises.Remove(exercise);
@@ -202,7 +288,40 @@ public static class ExerciseEndpoints
         });
     }
 
-    private static ExerciseDto ToDto(Exercise exercise) =>
+    private static async Task<bool> NameExistsAsync(AppDbContext db, string name, int? excludedId = null)
+    {
+        var normalizedName = name.Trim().ToLowerInvariant();
+        var query = db.Exercises.Where(exercise => exercise.Name.ToLower() == normalizedName);
+
+        if (excludedId.HasValue)
+        {
+            query = query.Where(exercise => exercise.Id != excludedId.Value);
+        }
+
+        return await query.AnyAsync();
+    }
+
+    private static async Task<Dictionary<int, int>> GetWorkoutReferenceCountsAsync(
+        AppDbContext db,
+        IReadOnlyCollection<int> exerciseIds)
+    {
+        if (exerciseIds.Count == 0)
+        {
+            return [];
+        }
+
+        return await db.WorkoutExercises
+            .Where(workoutExercise => exerciseIds.Contains(workoutExercise.ExerciseId))
+            .GroupBy(workoutExercise => workoutExercise.ExerciseId)
+            .Select(group => new
+            {
+                ExerciseId = group.Key,
+                ReferenceCount = group.Count()
+            })
+            .ToDictionaryAsync(item => item.ExerciseId, item => item.ReferenceCount);
+    }
+
+    private static ExerciseDto ToDto(Exercise exercise, int workoutReferenceCount) =>
         new(
             exercise.Id,
             exercise.Slug,
@@ -221,6 +340,8 @@ public static class ExerciseEndpoints
             exercise.SearchTerms,
             exercise.CreatedAtUtc,
             exercise.UpdatedAtUtc,
+            workoutReferenceCount > 0,
+            workoutReferenceCount,
             exercise.Aliases
                 .Select(alias => alias.Alias)
                 .OrderBy(alias => alias)
@@ -285,6 +406,8 @@ public record ExerciseDto(
     string SearchTerms,
     DateTime CreatedAtUtc,
     DateTime UpdatedAtUtc,
+    bool IsReferencedByWorkouts,
+    int WorkoutReferenceCount,
     IReadOnlyList<string> Aliases,
     IReadOnlyList<string> SecondaryMuscleGroups);
 

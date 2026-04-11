@@ -21,6 +21,8 @@ export interface Exercise {
   searchTerms: string
   createdAtUtc: string
   updatedAtUtc: string
+  isReferencedByWorkouts: boolean
+  workoutReferenceCount: number
   aliases: string[]
   secondaryMuscleGroups: string[]
 }
@@ -64,6 +66,28 @@ export interface ExerciseSearchResponse {
   hasMore: boolean
 }
 
+export interface ExerciseImportBatch {
+  id: number
+  catalogVersion?: string | null
+  catalogPath: string
+  status: string
+  triggeredBy: string
+  totalExercises?: number | null
+  created?: number | null
+  updated?: number | null
+  unchanged?: number | null
+  message?: string | null
+  importedAtUtc: string
+}
+
+export interface ExerciseCatalogStatus {
+  catalogPath: string
+  catalogFileExists: boolean
+  currentCatalogVersion?: string | null
+  catalogMessage?: string | null
+  lastImport?: ExerciseImportBatch | null
+}
+
 export function useExercises() {
   const { getToken } = useAuth()
   const router = useRouter()
@@ -72,12 +96,31 @@ export function useExercises() {
     return { Authorization: `Bearer ${getToken()}` }
   }
 
+  async function getErrorMessage(res: Response): Promise<string> {
+    const contentType = res.headers.get('Content-Type') ?? ''
+
+    if (contentType.includes('application/json')) {
+      const payload = (await res.json()) as {
+        error?: string
+        detail?: string
+        title?: string
+        message?: string
+      }
+
+      return payload.error ?? payload.detail ?? payload.title ?? payload.message ?? `Request failed: ${res.status}`
+    }
+
+    const text = await res.text()
+    return text || `Request failed: ${res.status}`
+  }
+
   async function handleResponse<T>(res: Response): Promise<T> {
     if (res.status === 401) {
       router.push('/login')
       throw new Error('Unauthorized')
     }
-    if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+    if (!res.ok) throw new Error(await getErrorMessage(res))
+    if (res.status === 204) return undefined as T
     return res.json() as Promise<T>
   }
 
@@ -136,8 +179,33 @@ export function useExercises() {
       router.push('/login')
       throw new Error('Unauthorized')
     }
-    if (!res.ok) throw new Error(`Request failed: ${res.status}`)
+    if (!res.ok) throw new Error(await getErrorMessage(res))
   }
 
-  return { fetchExercises, fetchExerciseSearch, createExercise, updateExercise, deleteExercise }
+  async function fetchAdminCatalogStatus(): Promise<ExerciseCatalogStatus> {
+    const res = await fetch(`${API_BASE}/api/admin/exercises/catalog-status`, {
+      headers: authHeaders(),
+    })
+
+    return handleResponse<ExerciseCatalogStatus>(res)
+  }
+
+  async function reimportExerciseCatalog(): Promise<ExerciseCatalogStatus> {
+    const res = await fetch(`${API_BASE}/api/admin/exercises/reimport`, {
+      method: 'POST',
+      headers: authHeaders(),
+    })
+
+    return handleResponse<ExerciseCatalogStatus>(res)
+  }
+
+  return {
+    fetchExercises,
+    fetchExerciseSearch,
+    fetchAdminCatalogStatus,
+    reimportExerciseCatalog,
+    createExercise,
+    updateExercise,
+    deleteExercise,
+  }
 }
