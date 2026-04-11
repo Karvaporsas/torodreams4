@@ -99,6 +99,13 @@ builder.Services.AddAuthorizationBuilder()
 
 var app = builder.Build();
 
+if (!app.Environment.IsEnvironment("Testing"))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+
 app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();

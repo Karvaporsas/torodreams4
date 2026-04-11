@@ -22,6 +22,7 @@ public static class ExerciseCatalogBackfillCommand
             .Options;
 
         await using var db = new AppDbContext(dbOptions);
+        await db.Database.MigrateAsync();
         var backfill = new ExerciseCatalogBackfillService(db);
         var result = await backfill.BackfillAsync();
 

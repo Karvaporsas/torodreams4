@@ -38,6 +38,7 @@ public static class UserCreator
             .Options;
 
         await using var db = new AppDbContext(dbOptions);
+        await db.Database.MigrateAsync();
 
         var exists = await db.Users.AnyAsync(u => u.Username == username);
         if (exists)

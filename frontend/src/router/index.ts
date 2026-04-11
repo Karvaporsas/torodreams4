@@ -5,7 +5,7 @@ import AdminExercisesView from '../views/AdminExercisesView.vue'
 import WorkoutsView from '../views/WorkoutsView.vue'
 import WorkoutActiveView from '../views/WorkoutActiveView.vue'
 import WorkoutDetailView from '../views/WorkoutDetailView.vue'
-import { parseTokenPayload } from '../composables/useAuth'
+import { getTokenRoles, parseTokenPayload } from '../composables/useAuth'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -28,8 +28,7 @@ router.beforeEach((to) => {
   if (to.path.startsWith('/admin')) {
     if (!token) return '/login'
     const payload = parseTokenPayload(token)
-    const roles = payload?.['role']
-    const isAdmin = Array.isArray(roles) ? roles.includes('Admin') : roles === 'Admin'
+    const isAdmin = getTokenRoles(payload).includes('Admin')
     if (!isAdmin) return '/'
   }
 })

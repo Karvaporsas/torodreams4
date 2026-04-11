@@ -36,6 +36,7 @@ public static class ExerciseCatalogImporterCommand
             .Options;
 
         await using var db = new AppDbContext(dbOptions);
+        await db.Database.MigrateAsync();
         var importer = new ExerciseCatalogImportService(db);
 
         try

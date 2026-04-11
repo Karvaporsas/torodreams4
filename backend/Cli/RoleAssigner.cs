@@ -41,6 +41,7 @@ public static class RoleAssigner
             .Options;
 
         await using var db = new AppDbContext(dbOptions);
+        await db.Database.MigrateAsync();
 
         var user = await db.Users.FirstOrDefaultAsync(u => u.Username == username);
         if (user is null)
