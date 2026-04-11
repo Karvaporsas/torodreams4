@@ -1,7 +1,7 @@
-/* AdminExercisesView ─────────────────────────────────────── */
+/* AdminExercisesView */
 
 .admin-exercises {
-  max-width: 760px;
+  max-width: 1100px;
   margin: 2rem auto;
   padding: var(--space-6) var(--space-4);
 }
@@ -12,12 +12,12 @@
 }
 
 .admin-exercises h2 {
+  margin: 0;
   font-size: var(--text-base);
-  margin-bottom: var(--space-3);
-  color: var(--color-text-muted);
 }
 
-.admin-add-form {
+.admin-form-card,
+.admin-exercise-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
@@ -25,54 +25,120 @@
   margin-bottom: var(--space-6);
 }
 
-.admin-add-form .form-row {
+.admin-form-header,
+.admin-exercise-card-header {
   display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
   gap: var(--space-3);
-  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
 }
 
-.admin-add-form .form-row input {
-  flex: 1;
-  min-width: 140px;
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: var(--space-3);
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--text-sm);
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.admin-table th,
-.admin-table td {
-  text-align: left;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.admin-table th {
-  background: var(--color-surface);
-  font-weight: var(--weight-semibold);
+.admin-field span,
+.admin-checkbox span,
+.admin-meta-grid span,
+.admin-list-row span,
+.admin-slug {
   color: var(--color-text-muted);
   font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.admin-table td.description {
-  color: var(--color-text-muted);
+.admin-field-wide {
+  grid-column: 1 / -1;
 }
 
-.admin-table td input {
-  width: 100%;
-}
-
-.admin-table .actions {
+.admin-checkbox {
   display: flex;
+  align-items: center;
   gap: var(--space-2);
+  min-height: 42px;
+}
+
+.admin-exercise-list {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.admin-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-slug {
+  margin-top: var(--space-1);
+}
+
+.admin-description {
+  margin: 0 0 var(--space-4);
+}
+
+.admin-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.admin-meta-grid div,
+.admin-list-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.admin-list-row + .admin-list-row {
+  margin-top: var(--space-3);
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-warning) 16%, transparent);
+  color: var(--color-warning);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+}
+
+.admin-badge-secondary {
+  background: color-mix(in srgb, var(--color-primary) 16%, transparent);
+  color: var(--color-primary);
+}
+
+.admin-exercise-card--archived {
+  opacity: 0.88;
 }
 
 .admin-error {
   color: var(--color-danger);
   font-size: var(--text-sm);
   margin-bottom: var(--space-4);
+}
+
+@media (max-width: 720px) {
+  .admin-form-header,
+  .admin-exercise-card-header {
+    flex-direction: column;
+  }
 }

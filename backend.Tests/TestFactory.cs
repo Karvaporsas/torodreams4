@@ -59,7 +59,20 @@ public class TestFactory : WebApplicationFactory<Program>, IAsyncLifetime
         db.UserRoles.Add(new UserRole { UserId = AdminUserId, Role = "Admin" });
 
         // Seed one exercise
-        var exercise = new Exercise { Name = "Bench Press", Description = "Chest press on a flat bench" };
+        var exercise = new Exercise
+        {
+            Slug = "bench-press",
+            Name = "Bench Press",
+            Description = "Chest press on a flat bench",
+            Category = "Push",
+            BodyRegion = "Upper Body",
+            MovementPattern = "Horizontal Push",
+            PrimaryMuscleGroup = "Chest",
+            PrimaryEquipment = "Barbell",
+            DifficultyLevel = "Intermediate",
+            TrainingStyle = "Strength",
+            SearchTerms = "bench press chest barbell horizontal push strength"
+        };
         db.Exercises.Add(exercise);
         await db.SaveChangesAsync();
 
