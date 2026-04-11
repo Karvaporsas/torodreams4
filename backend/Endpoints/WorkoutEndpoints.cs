@@ -82,7 +82,7 @@ public static class WorkoutEndpoints
             if (workout is null) return Results.NotFound();
             if (workout.UserId != userId.Value) return Results.Forbid();
 
-            var exerciseExists = await db.Exercises.AnyAsync(e => e.Id == req.ExerciseId);
+            var exerciseExists = await db.Exercises.AnyAsync(e => e.Id == req.ExerciseId && !e.IsArchived);
             if (!exerciseExists)
                 return Results.BadRequest(new { error = "Exercise not found." });
 

@@ -5,8 +5,42 @@ const API_BASE = 'http://localhost:5000'
 
 export interface Exercise {
   id: number
+  slug: string
   name: string
   description?: string | null
+  category: string
+  bodyRegion: string
+  movementPattern: string
+  primaryMuscleGroup: string
+  primaryEquipment?: string | null
+  secondaryEquipment?: string | null
+  difficultyLevel: string
+  trainingStyle: string
+  isUnilateral: boolean
+  isArchived: boolean
+  searchTerms: string
+  createdAtUtc: string
+  updatedAtUtc: string
+  aliases: string[]
+  secondaryMuscleGroups: string[]
+}
+
+export interface ExerciseInput {
+  slug?: string
+  name: string
+  description?: string
+  category?: string
+  bodyRegion?: string
+  movementPattern?: string
+  primaryMuscleGroup?: string
+  primaryEquipment?: string
+  secondaryEquipment?: string
+  difficultyLevel?: string
+  trainingStyle?: string
+  isUnilateral?: boolean
+  isArchived?: boolean
+  aliases?: string[]
+  secondaryMuscleGroups?: string[]
 }
 
 export function useExercises() {
@@ -26,27 +60,27 @@ export function useExercises() {
     return res.json() as Promise<T>
   }
 
-  async function fetchExercises(): Promise<Exercise[]> {
-    const res = await fetch(`${API_BASE}/api/exercises`, {
+  async function fetchExercises(includeArchived = false): Promise<Exercise[]> {
+    const res = await fetch(`${API_BASE}/api/exercises?includeArchived=${includeArchived}`, {
       headers: authHeaders(),
     })
     return handleResponse<Exercise[]>(res)
   }
 
-  async function createExercise(name: string, description?: string): Promise<Exercise> {
+  async function createExercise(input: ExerciseInput): Promise<Exercise> {
     const res = await fetch(`${API_BASE}/api/exercises`, {
       method: 'POST',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description }),
+      body: JSON.stringify(input),
     })
     return handleResponse<Exercise>(res)
   }
 
-  async function updateExercise(id: number, name: string, description?: string): Promise<Exercise> {
+  async function updateExercise(id: number, input: ExerciseInput): Promise<Exercise> {
     const res = await fetch(`${API_BASE}/api/exercises/${id}`, {
       method: 'PUT',
       headers: { ...authHeaders(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description }),
+      body: JSON.stringify(input),
     })
     return handleResponse<Exercise>(res)
   }

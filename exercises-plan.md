@@ -75,18 +75,18 @@ Keep `Exercise` as the root entity, but expand it so the library is actually sea
 
 ## Epics and Tasks
 
-### Epic 1 - Remodel the Exercise Domain
+### Epic 1 - Remodel the Exercise Domain **(Done)**
 
 **Outcome:** the database can store a real exercise library instead of just freeform names.
 
 **Tasks**
 
-- **E1-T1** Define the canonical metadata model for exercises, aliases, muscles, equipment, and archive state.
-- **E1-T2** Add EF Core entity changes and a migration for the expanded exercise schema.
-- **E1-T3** Decide which fields stay on `Exercises` versus which become child tables to keep queries simple.
-- **E1-T4** Add indexes for `Slug`, `Name`, archive state, category, equipment, and search-heavy fields.
-- **E1-T5** Update API DTOs and request contracts so frontend/admin screens can read and edit the richer model.
-- **E1-T6** Replace unsafe hard-delete behavior with archive or guarded delete logic when an exercise is already referenced by workouts.
+- **E1-T1** Define the canonical metadata model for exercises, aliases, muscles, equipment, and archive state. **Done**
+- **E1-T2** Add EF Core entity changes and a migration for the expanded exercise schema. **Done**
+- **E1-T3** Decide which fields stay on `Exercises` versus which become child tables to keep queries simple. **Done**
+- **E1-T4** Add indexes for `Slug`, `Name`, archive state, category, equipment, and search-heavy fields. **Done**
+- **E1-T5** Update API DTOs and request contracts so frontend/admin screens can read and edit the richer model. **Done**
+- **E1-T6** Replace unsafe hard-delete behavior with archive or guarded delete logic when an exercise is already referenced by workouts. **Done**
 
 ### Epic 2 - Build the Import and Seed Pipeline
 

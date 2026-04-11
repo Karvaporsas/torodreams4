@@ -43,25 +43,63 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
         // Create
         var createRes = await client.PostAsJsonAsync(
             "/api/exercises",
-            new { name = "Pull-up", description = "Upper-body pull" });
+            new
+            {
+                name = "Pull-up",
+                slug = "pull-up",
+                description = "Upper-body pull",
+                category = "Pull",
+                bodyRegion = "Upper Body",
+                movementPattern = "Vertical Pull",
+                primaryMuscleGroup = "Back",
+                primaryEquipment = "Bodyweight",
+                secondaryEquipment = "Pull-Up Bar",
+                difficultyLevel = "Intermediate",
+                trainingStyle = "Strength",
+                isUnilateral = false,
+                aliases = new[] { "Pull Up", "Strict Pull-up" },
+                secondaryMuscleGroups = new[] { "Biceps", "Forearms" }
+            });
         Assert.Equal(HttpStatusCode.Created, createRes.StatusCode);
 
         var created = JsonSerializer.Deserialize<ExerciseDto>(
             await createRes.Content.ReadAsStringAsync(), JsonOpts);
         Assert.NotNull(created);
         Assert.Equal("Pull-up", created.Name);
+        Assert.Equal("pull-up", created.Slug);
         Assert.Equal("Upper-body pull", created.Description);
+        Assert.Equal("Pull", created.Category);
+        Assert.Contains("Biceps", created.SecondaryMuscleGroups);
 
         // Update
         var updateRes = await client.PutAsJsonAsync(
             $"/api/exercises/{created.Id}",
-            new { name = "Chin-up", description = "Upper-body pull (supinated)" });
+            new
+            {
+                name = "Chin-up",
+                slug = "chin-up",
+                description = "Upper-body pull (supinated)",
+                category = "Pull",
+                bodyRegion = "Upper Body",
+                movementPattern = "Vertical Pull",
+                primaryMuscleGroup = "Back",
+                primaryEquipment = "Bodyweight",
+                secondaryEquipment = "Pull-Up Bar",
+                difficultyLevel = "Intermediate",
+                trainingStyle = "Strength",
+                isUnilateral = false,
+                isArchived = false,
+                aliases = new[] { "Chin Up" },
+                secondaryMuscleGroups = new[] { "Biceps" }
+            });
         updateRes.EnsureSuccessStatusCode();
 
         var updated = JsonSerializer.Deserialize<ExerciseDto>(
             await updateRes.Content.ReadAsStringAsync(), JsonOpts);
         Assert.NotNull(updated);
         Assert.Equal("Chin-up", updated.Name);
+        Assert.Equal("chin-up", updated.Slug);
+        Assert.Single(updated.Aliases);
 
         // Delete
         var deleteRes = await client.DeleteAsync($"/api/exercises/{created.Id}");
@@ -74,5 +112,73 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
         Assert.DoesNotContain(all!, e => e.Id == created.Id);
     }
 
-    private record ExerciseDto(int Id, string Name, string? Description);
+    [Fact]
+    public async Task DeleteExercise_WhenReferenced_ArchivesInstead()
+    {
+        var client = AdminClient();
+
+        var workoutRes = await ClientFor("alice").PostAsync("/api/workouts", content: null);
+        workoutRes.EnsureSuccessStatusCode();
+        var workout = JsonSerializer.Deserialize<WorkoutSummaryDto>(
+            await workoutRes.Content.ReadAsStringAsync(), JsonOpts);
+        Assert.NotNull(workout);
+
+        var addExerciseRes = await ClientFor("alice").PostAsJsonAsync(
+            $"/api/workouts/{workout!.Id}/exercises",
+            new { exerciseId = _factory.ExerciseId });
+        addExerciseRes.EnsureSuccessStatusCode();
+
+        var deleteRes = await client.DeleteAsync($"/api/exercises/{_factory.ExerciseId}");
+        Assert.Equal(HttpStatusCode.OK, deleteRes.StatusCode);
+
+        var archived = JsonSerializer.Deserialize<DeleteExerciseResult>(
+            await deleteRes.Content.ReadAsStringAsync(), JsonOpts);
+        Assert.NotNull(archived);
+        Assert.True(archived.Archived);
+        Assert.True(archived.Exercise.IsArchived);
+
+        var activeListRes = await client.GetAsync("/api/exercises");
+        activeListRes.EnsureSuccessStatusCode();
+        var activeList = JsonSerializer.Deserialize<List<ExerciseDto>>(
+            await activeListRes.Content.ReadAsStringAsync(), JsonOpts);
+        Assert.DoesNotContain(activeList!, e => e.Id == _factory.ExerciseId);
+
+        var fullListRes = await client.GetAsync("/api/exercises?includeArchived=true");
+        fullListRes.EnsureSuccessStatusCode();
+        var fullList = JsonSerializer.Deserialize<List<ExerciseDto>>(
+            await fullListRes.Content.ReadAsStringAsync(), JsonOpts);
+        Assert.Contains(fullList!, e => e.Id == _factory.ExerciseId && e.IsArchived);
+    }
+
+    private HttpClient ClientFor(string username, params string[] roles)
+    {
+        var client = _factory.CreateClient();
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", TokenHelper.GenerateToken(username, roles));
+        return client;
+    }
+
+    private record ExerciseDto(
+        int Id,
+        string Slug,
+        string Name,
+        string? Description,
+        string Category,
+        string BodyRegion,
+        string MovementPattern,
+        string PrimaryMuscleGroup,
+        string? PrimaryEquipment,
+        string? SecondaryEquipment,
+        string DifficultyLevel,
+        string TrainingStyle,
+        bool IsUnilateral,
+        bool IsArchived,
+        string SearchTerms,
+        DateTime CreatedAtUtc,
+        DateTime UpdatedAtUtc,
+        List<string> Aliases,
+        List<string> SecondaryMuscleGroups);
+
+    private record DeleteExerciseResult(bool Archived, string Message, ExerciseDto Exercise);
+    private record WorkoutSummaryDto(int Id, DateTime StartedAt, DateTime? CompletedAt, int? DurationSeconds, int ExerciseCount);
 }
