@@ -11,23 +11,93 @@ public static class ExerciseEndpoints
     public static void MapExerciseEndpoints(this WebApplication app)
     {
         // GET /api/exercises — any authenticated user
-        app.MapGet("/api/exercises", async (AppDbContext db, bool includeArchived = false) =>
+        app.MapGet("/api/exercises", async (
+            AppDbContext db,
+            string? search = null,
+            string? category = null,
+            string? movementPattern = null,
+            string? equipment = null,
+            string? bodyRegion = null,
+            string? trainingStyle = null,
+            string? sort = null,
+            bool includeArchived = false,
+            int page = 1,
+            int pageSize = 250) =>
         {
-            var query = db.Exercises
-                .Include(e => e.Aliases)
-                .Include(e => e.SecondaryMuscles)
-                .AsQueryable();
+            page = Math.Max(page, 1);
+            pageSize = Math.Clamp(pageSize, 1, 250);
+
+            IQueryable<Exercise> query = db.Exercises.AsNoTracking();
 
             if (!includeArchived)
             {
                 query = query.Where(e => !e.IsArchived);
             }
 
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var normalizedSearch = search.Trim().ToLowerInvariant();
+                query = query.Where(e =>
+                    e.Name.ToLower().Contains(normalizedSearch) ||
+                    (e.Description != null && e.Description.ToLower().Contains(normalizedSearch)) ||
+                    e.SearchTerms.Contains(normalizedSearch));
+            }
+
+            if (!string.IsNullOrWhiteSpace(category))
+            {
+                var normalizedCategory = category.Trim().ToLowerInvariant();
+                query = query.Where(e => e.Category.ToLower() == normalizedCategory);
+            }
+
+            if (!string.IsNullOrWhiteSpace(movementPattern))
+            {
+                var normalizedMovementPattern = movementPattern.Trim().ToLowerInvariant();
+                query = query.Where(e => e.MovementPattern.ToLower() == normalizedMovementPattern);
+            }
+
+            if (!string.IsNullOrWhiteSpace(equipment))
+            {
+                var normalizedEquipment = equipment.Trim().ToLowerInvariant();
+                query = query.Where(e =>
+                    (e.PrimaryEquipment != null && e.PrimaryEquipment.ToLower() == normalizedEquipment) ||
+                    (e.SecondaryEquipment != null && e.SecondaryEquipment.ToLower() == normalizedEquipment));
+            }
+
+            if (!string.IsNullOrWhiteSpace(bodyRegion))
+            {
+                var normalizedBodyRegion = bodyRegion.Trim().ToLowerInvariant();
+                query = query.Where(e => e.BodyRegion.ToLower() == normalizedBodyRegion);
+            }
+
+            if (!string.IsNullOrWhiteSpace(trainingStyle))
+            {
+                var normalizedTrainingStyle = trainingStyle.Trim().ToLowerInvariant();
+                query = query.Where(e => e.TrainingStyle.ToLower() == normalizedTrainingStyle);
+            }
+
+            var totalCount = await query.CountAsync();
+
+            query = sort?.Trim().ToLowerInvariant() switch
+            {
+                "name-desc" => query.OrderByDescending(e => e.Name).ThenBy(e => e.Id),
+                "updated" => query.OrderBy(e => e.UpdatedAtUtc).ThenBy(e => e.Name),
+                "updated-desc" => query.OrderByDescending(e => e.UpdatedAtUtc).ThenBy(e => e.Name),
+                _ => query.OrderBy(e => e.Name).ThenBy(e => e.Id)
+            };
+
             var exercises = await query
-                .OrderBy(e => e.Name)
+                .Include(e => e.Aliases)
+                .Include(e => e.SecondaryMuscles)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
 
-            return Results.Ok(exercises.Select(ToDto));
+            return Results.Ok(new ExerciseSearchResponse(
+                exercises.Select(ToDto).ToList(),
+                page,
+                pageSize,
+                totalCount,
+                (page * pageSize) < totalCount));
         });
 
         // POST /api/exercises — admin only
@@ -217,6 +287,13 @@ public record ExerciseDto(
     DateTime UpdatedAtUtc,
     IReadOnlyList<string> Aliases,
     IReadOnlyList<string> SecondaryMuscleGroups);
+
+public record ExerciseSearchResponse(
+    IReadOnlyList<ExerciseDto> Items,
+    int Page,
+    int PageSize,
+    int TotalCount,
+    bool HasMore);
 
 public record DeleteExerciseResult(bool Archived, string Message, ExerciseDto Exercise);
 

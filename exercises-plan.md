@@ -102,19 +102,19 @@ Keep `Exercise` as the root entity, but expand it so the library is actually sea
 - **E2-T6** Decide whether first-run environments import automatically or only through explicit CLI/admin action. **Done** — explicit CLI import only for v1.
 - **E2-T7** Add automated tests for import idempotency and for safe re-import after catalog edits. **Done**
 
-### Epic 3 - Make Exercise Search and Insert Fast in Workout Flow
+### Epic 3 - Make Exercise Search and Insert Fast in Workout Flow **(Done)**
 
 **Outcome:** users can find exercises quickly without scrolling through a giant dropdown.
 
 **Tasks**
 
-- **E3-T1** Extend `GET /api/exercises` to support search, filters, sorting, paging, and archive exclusion.
-- **E3-T2** Add filter parameters for `search`, `category`, `movementPattern`, `equipment`, `bodyRegion`, and `trainingStyle`.
-- **E3-T3** Replace the workout view's plain `<select>` with a searchable picker/combobox.
-- **E3-T4** Debounce search requests and keep the UX responsive for large catalogs.
-- **E3-T5** Show enough exercise context in search results to disambiguate similar names (equipment, movement pattern, primary muscle, or short description).
-- **E3-T6** Preserve existing workout insertion behavior, ordering, and set tracking after the picker changes.
-- **E3-T7** Add empty, loading, and error states that make a large searchable library usable on mobile.
+- **E3-T1** Extend `GET /api/exercises` to support search, filters, sorting, paging, and archive exclusion. **Done**
+- **E3-T2** Add filter parameters for `search`, `category`, `movementPattern`, `equipment`, `bodyRegion`, and `trainingStyle`. **Done**
+- **E3-T3** Replace the workout view's plain `<select>` with a searchable picker/combobox. **Done**
+- **E3-T4** Debounce search requests and keep the UX responsive for large catalogs. **Done**
+- **E3-T5** Show enough exercise context in search results to disambiguate similar names (equipment, movement pattern, primary muscle, or short description). **Done**
+- **E3-T6** Preserve existing workout insertion behavior, ordering, and set tracking after the picker changes. **Done**
+- **E3-T7** Add empty, loading, and error states that make a large searchable library usable on mobile. **Done**
 
 ### Epic 4 - Upgrade the Admin Exercise Area
 

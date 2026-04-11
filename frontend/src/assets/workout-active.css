@@ -133,6 +133,87 @@
   flex: 1;
 }
 
+.active-picker {
+  margin-bottom: var(--space-6);
+}
+
+.active-picker-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1.8fr) repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.active-picker-search,
+.active-picker-filter {
+  width: 100%;
+}
+
+.active-picker-feedback {
+  margin: var(--space-3) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.active-picker-feedback--error {
+  color: var(--color-danger);
+}
+
+.active-picker-results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.active-picker-result {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color var(--transition-fast), transform var(--transition-fast), background-color var(--transition-fast);
+}
+
+.active-picker-result:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  background: var(--color-surface-raised);
+  transform: translateY(-1px);
+}
+
+.active-picker-result:disabled {
+  opacity: 0.72;
+  cursor: progress;
+}
+
+.active-picker-result-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.active-picker-result-name {
+  font-weight: var(--weight-semibold);
+}
+
+.active-picker-result-meta,
+.active-picker-result-description {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.active-picker-result-action {
+  flex-shrink: 0;
+  color: var(--color-accent);
+  font-weight: var(--weight-semibold);
+}
+
 /* ── Exercise list ───────────────────────────────────────── */
 
 .active-exercises {
@@ -374,5 +455,19 @@
   color: var(--color-text-muted);
   font-size: var(--text-sm);
   font-style: italic;
+}
+
+@media (max-width: 720px) {
+  .active-picker-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .active-picker-result {
+    flex-direction: column;
+  }
+
+  .active-picker-result-action {
+    align-self: flex-start;
+  }
 }
 

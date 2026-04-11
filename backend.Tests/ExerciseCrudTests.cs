@@ -28,11 +28,11 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
         var res = await AdminClient().GetAsync("/api/exercises");
         res.EnsureSuccessStatusCode();
 
-        var list = JsonSerializer.Deserialize<List<ExerciseDto>>(
+        var list = JsonSerializer.Deserialize<ExerciseSearchResponse>(
             await res.Content.ReadAsStringAsync(), JsonOpts);
 
         Assert.NotNull(list);
-        Assert.Contains(list, e => e.Name == "Bench Press");
+        Assert.Contains(list.Items, e => e.Name == "Bench Press");
     }
 
     [Fact]
@@ -107,9 +107,9 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
 
         // Verify gone
         var allRes = await client.GetAsync("/api/exercises");
-        var all = JsonSerializer.Deserialize<List<ExerciseDto>>(
+        var all = JsonSerializer.Deserialize<ExerciseSearchResponse>(
             await allRes.Content.ReadAsStringAsync(), JsonOpts);
-        Assert.DoesNotContain(all!, e => e.Id == created.Id);
+        Assert.DoesNotContain(all!.Items, e => e.Id == created.Id);
     }
 
     [Fact]
@@ -139,15 +139,63 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
 
         var activeListRes = await client.GetAsync("/api/exercises");
         activeListRes.EnsureSuccessStatusCode();
-        var activeList = JsonSerializer.Deserialize<List<ExerciseDto>>(
+        var activeList = JsonSerializer.Deserialize<ExerciseSearchResponse>(
             await activeListRes.Content.ReadAsStringAsync(), JsonOpts);
-        Assert.DoesNotContain(activeList!, e => e.Id == _factory.ExerciseId);
+        Assert.DoesNotContain(activeList!.Items, e => e.Id == _factory.ExerciseId);
 
         var fullListRes = await client.GetAsync("/api/exercises?includeArchived=true");
         fullListRes.EnsureSuccessStatusCode();
-        var fullList = JsonSerializer.Deserialize<List<ExerciseDto>>(
+        var fullList = JsonSerializer.Deserialize<ExerciseSearchResponse>(
             await fullListRes.Content.ReadAsStringAsync(), JsonOpts);
-        Assert.Contains(fullList!, e => e.Id == _factory.ExerciseId && e.IsArchived);
+        Assert.Contains(fullList!.Items, e => e.Id == _factory.ExerciseId && e.IsArchived);
+    }
+
+    [Fact]
+    public async Task GetExercises_WithSearchFiltersAndPaging_ReturnsMatchingPage()
+    {
+        var client = AdminClient();
+
+        await client.PostAsJsonAsync("/api/exercises", new
+        {
+            name = "Cable Row",
+            slug = "cable-row",
+            category = "Back",
+            bodyRegion = "Upper Body",
+            movementPattern = "Horizontal Pull",
+            primaryMuscleGroup = "Back",
+            primaryEquipment = "Cable",
+            difficultyLevel = "Beginner",
+            trainingStyle = "Hypertrophy",
+            aliases = new[] { "Seated Row" },
+            secondaryMuscleGroups = new[] { "Biceps" }
+        });
+
+        await client.PostAsJsonAsync("/api/exercises", new
+        {
+            name = "Cable Fly",
+            slug = "cable-fly",
+            category = "Chest",
+            bodyRegion = "Upper Body",
+            movementPattern = "Horizontal Push",
+            primaryMuscleGroup = "Chest",
+            primaryEquipment = "Cable",
+            difficultyLevel = "Beginner",
+            trainingStyle = "Hypertrophy"
+        });
+
+        var res = await client.GetAsync("/api/exercises?search=row&equipment=Cable&movementPattern=Horizontal Pull&page=1&pageSize=1");
+        res.EnsureSuccessStatusCode();
+
+        var result = JsonSerializer.Deserialize<ExerciseSearchResponse>(
+            await res.Content.ReadAsStringAsync(), JsonOpts);
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.Page);
+        Assert.Equal(1, result.PageSize);
+        Assert.True(result.TotalCount >= 1);
+        Assert.Single(result.Items);
+        Assert.Equal("Cable Row", result.Items[0].Name);
+        Assert.False(result.HasMore);
     }
 
     private HttpClient ClientFor(string username, params string[] roles)
@@ -178,6 +226,13 @@ public class ExerciseCrudTests : IClassFixture<TestFactory>
         DateTime UpdatedAtUtc,
         List<string> Aliases,
         List<string> SecondaryMuscleGroups);
+
+    private record ExerciseSearchResponse(
+        List<ExerciseDto> Items,
+        int Page,
+        int PageSize,
+        int TotalCount,
+        bool HasMore);
 
     private record DeleteExerciseResult(bool Archived, string Message, ExerciseDto Exercise);
     private record WorkoutSummaryDto(int Id, DateTime StartedAt, DateTime? CompletedAt, int? DurationSeconds, int ExerciseCount);
